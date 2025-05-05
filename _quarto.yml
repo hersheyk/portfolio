@@ -1,6 +1,7 @@
 project:
   type: website
-
+  output-dir: docs
+  
 website:
   title: "website"
   navbar:
@@ -19,3 +20,4 @@ format:
 
 editor: visual
 
+# ~ additional metadata excluded for brevity ~
