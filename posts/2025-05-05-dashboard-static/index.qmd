@@ -1,0 +1,25 @@
+---
+title: "Quarto Dashboards"
+author: "Harshini Karthikeyan"
+date: '04-10-2025'
+format:
+  html:
+    backgroundcolor: whitesmoke
+    monobackgroundcolor: lightsteelblue
+    fontcolor: black
+    number_sections: yes
+#mainfont: default
+editor: visual
+toc: true
+toc_float: true
+embed-resources: true
+image: dashboard_preview.JPG
+---
+
+Link to static dashboard:
+
+<https://hersheythegr8.quarto.pub/lab-3/#belief-in-vaccine-safety-statistics>
+
+Link to interactive dashboard:
+
+<https://ezd0m8-harshini-k.shinyapps.io/lab4/#belief-in-vaccine-safety-statistics>

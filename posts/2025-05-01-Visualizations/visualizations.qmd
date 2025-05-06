@@ -1,7 +1,7 @@
 ---
 title: "Visualizations"
 author: "Harshini Karthikeyan"
-date: 'April 10th 2025'
+date: '04-10-2025'
 format:
   html:
     backgroundcolor: whitesmoke
@@ -13,6 +13,7 @@ editor: visual
 toc: true
 toc_float: true
 embed-resources: true
+image: visual_preview.JPG
 ---
 
 # Lab 2
@@ -116,15 +117,12 @@ national1 <- national |>
   filter(Response == "Strongly agree" | Response == "Somewhat agree") |> group_by(Country) |>
   summarize(Agree_Percent = sum(as.numeric(National_Results_Col_Per)), .groups = "drop") |> 
   mutate(Region = case_when(
-    
     Country %in% asia ~ "Asia",
     Country %in% mena ~ "Middle East and North Africa",
     Country %in% americas ~ "Americas",
     Country %in% sub_sahara ~ "Sub-Saharan Africa",
     Country %in% europe ~ "Europe",
-
     Country %in% former_soviet ~ "Former Soviet Union",
-    
     Country %in% oceania ~ "Oceania",
     
     TRUE ~ "Other" #used to check, there are none that fall in this category
@@ -143,6 +141,8 @@ outliers <- national1|>
   ) |>
   filter(is_outlier)
 ```
+
+![](/images/Capture3.JPG)
 
 ```{r plot nat1}
 
@@ -224,7 +224,6 @@ national2 <- national |>
     
     TRUE ~ "Other" #used to check, there are none that fall in this category
   ))
-head(national2)
 ```
 
 ```{r connect nat2 to world dataset}
@@ -274,10 +273,9 @@ leaflet(world_data) |> addTiles() |>
 
 13. **Select a data visualization in the report that you think could be improved. Be sure to cite both the page number and figure title. Do your best to tell the story of this graph in words. That is, what is this graph telling you? What do you think the authors meant to convey with it?**
 
-```{r show existing plot2}
-#knitr::include_graphics("images/Capture2.jpg")
+    ![](/images/Capture2.JPG)
 
-```
+<!-- -->
 
 14. **List the variables that appear to be displayed in this visualization.**
 
@@ -336,13 +334,8 @@ national3 <- national3 |>
 ```
 
 ```{r}
-national3
-```
-
-```{r}
 
 data2<-read_excel("C:\\Users\\Geetha\\Downloads\\wgm2018-dataset-crosstabs-all-countries.xlsx", sheet = "Full dataset")
-head(data2)
 
 
 ```
@@ -362,36 +355,33 @@ france<- data2|> filter( WP5 == 13) |> select(WP5, Q25, Q27)|>group_by(Q27, Q25)
 
 colnames(france) <- c("Parents", "Non-Parents", "Country")
 
-france
 ```
 
-```{r}
+```{r joining the two data sets}
 france_all<- merge(national3, france, by = "Country")
 
-france_all
 ```
 
-```{r}
+```{r pivoting the joined france set to longer}
 france_long <- france_all |>
   pivot_longer(
     cols = -c(Country, National_Results_Col_Per),
     names_to = "Category",
     values_to = "Percentage"
   )|>mutate(Group = case_when(
-   Category %in% c("Men", "Women") ~ "Gender",
-    Category %in% c("15-29", "30-49", "50+") ~ "Age",
-     Category %in% c("Elementary education or less", "Secondary education", "Post-secondary education") ~ "Education",
-    Category %in% c("Rural/small town", "Big city/suburb") ~ "Region",
-    
-    Category %in% c("Parents", "Non-Parents") ~ "Parenthood",
-    TRUE ~ "Other"
+  Category %in% c("Men", "Women") ~ "Gender",
+  Category %in% c("15-29", "30-49", "50+") ~ "Age",
+  Category %in% c("Elementary education or less", "Secondary education", "Post-secondary education") ~ "Education",
+  Category %in% c("Rural/small town", "Big city/suburb") ~ "Region",
+  Category %in% c("Parents", "Non-Parents") ~ "Parenthood",
+  TRUE ~ "Other"
   ))
 france_long
 ```
 
 I used ggrepel!
 
-```{r}
+```{r plot 3}
 
 
 
