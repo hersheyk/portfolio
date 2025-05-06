@@ -1,11 +1,19 @@
 ---
-title: "website"
+title: "Harshini Karthikeyan"
+#image: media/headshot.jpeg
+toc: false
+about: 
+  template: jolla
+  image-shape: round
+  image-width: 17em
+  links:
+    - text: LinkedIn
+      href: https://www.linkedin.com/in/harshini-karthikeyan-9512ab1b0/
+    - text: GitHub
+      href: https://github.com/hersheyk
+    - text: Email
+      href: mailto:harshini.karthikeyan2021@gmail.com
 ---
+        
 
-This is a Quarto website.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
-```{r}
-1 + 1
-```
