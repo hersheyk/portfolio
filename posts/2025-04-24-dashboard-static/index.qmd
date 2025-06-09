@@ -1,0 +1,42 @@
+---
+title: "Static Quarto Dashboards"
+author: "Harshini Karthikeyan"
+date: '04-24-2025'
+format:
+  html:
+    backgroundcolor: whitesmoke
+    monobackgroundcolor: lightsteelblue
+    fontcolor: black
+    number_sections: yes
+#mainfont: default
+editor: visual
+toc: true
+toc_float: true
+embed-resources: true
+image: dashboard_preview.JPG
+---
+
+# Overall thoughts:
+
+I was very proud to get this lab up and working. I definitely learned a lot in the process. I believe a lot of what I learned in making static quarto dashboards was encapsulated in lab 4 with the interactive dashboards and lab 2, where I set up a lot of the initial data. As a result, I do not mention this lab too much in the final reflection. I believe the main standard this lab showcases is RW: 3 as I label all my code chunks and in value boxes, I use code-chunk options.
+
+## RW-3
+
+```{r}
+#| eval: False
+#| content: valuebox
+#| title: "Country with Lowest Belief in Vaccine Safety"
+#| color: danger
+list(
+  value = toupper(lowest_country)
+)
+```
+
+```{r}
+
+knitr::include_graphics("C:/Users/Geetha/OneDrive/Documents/STAT541/portfolio/images/labeledchunks.JPG")
+```
+
+You can visit my published static dashboard below:
+
+<https://hersheythegr8.quarto.pub/lab-3/#belief-in-vaccine-safety-statistics>

@@ -1,0 +1,421 @@
+---
+title: "Visualizations"
+author: "Harshini Karthikeyan"
+date: '04-10-2025'
+format:
+  html:
+    backgroundcolor: whitesmoke
+    monobackgroundcolor: lightsteelblue
+    fontcolor: black
+    number_sections: yes
+#mainfont: default
+editor: visual
+toc: true
+toc_float: true
+embed-resources: true
+image: visual_preview.JPG
+---
+
+# Lab 2: Advanced Visualizations
+
+I found this lab to help me remember and sharpen my ggplot skills! I particularly feel I have showcased IL-1, IL2, DM-1, TC-1 and PV-1 as I utilized ggrepel to annotate a plot in lab 2 for visualizations, used a custom color palette, wrangled data, interpreted plots, and presented visuals well. You can see these outcomes highlighted in the floating table of contents, to help you visit each one!
+
+```{r libraries, results='hide'}
+#| message: false
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(ggrepel)
+library(scales)
+library(leaflet)
+
+library(rnaturalearth)
+library(sf)
+library(rnaturalearthdata)
+```
+
+## Part 1:
+
+1.  **While there are certainly issues with this image, do your best to tell the story of this graph in words. That is, what is this graph telling you? What do you think the authors meant to convey with it?**
+
+I believe this plot is trying to show us the proportion of people in a particular country that believe a vaccine is safe. It shows us one observation per country where the y-axis appears to be country? It also sorted the observations by proportion, so that it appears that the proportions increase as the y-axis goes up.
+
+2.  **List the variables that appear to be displayed in this visualization. *Hint: Variables refer to columns in the data.***
+
+The country, the global region of the country and the percentage of people in the country that believe a vaccine is safe.
+
+3.  **Now that you’re versed in the grammar of graphics (e.g., `ggplot`), list the *aesthetics* used and which *variables* are mapped to each.**
+
+The x-axis the percentage of people in the country that believe a vaccine is safe. The y-axis is the country, the color is filled by global region.
+
+4.  **What type of graph would you call this? Meaning, what `geom` would you use to produce this plot?**
+
+I would call this a scatter plot and would use geom point to produce it.
+
+5.  **Provide at least four problems or changes that would improve this graph. *Please format your changes as bullet points!***
+
+-   I think this is a graph that is faceted by region of the world, but it lends to a strange stacked graph like view that is not very intuitive, and leaves some plots stranded from their axes. I would try faceting differently or trying to remove the facet entirely.
+
+-   I think having the y-axis be the countries is a bit strange, and that sorting it by the proportion feels odd, as though it is increasing over time or something, I would try sorting it alphabetically or removing the y-axis and making it a box-plot instead.
+
+-   I think having the legend at the bottom is unnecessary as the global region is also written directly onto each facet of the plot, so I would remove one of those, preferably the legend, depending on how my plot turns out.
+
+-   I think having to state that the dark vertical lines represent region medians but also not writing the number of each on the plot itself is confusing and forces the reader to then look for th median by finding the axis
+
+## **Improving the Bad Visualization**
+
+6.  **Improve the visualization above by either re-creating it with the issues you identified fixed OR by creating a new visualization that you believe tells the same story better.**
+
+```{r calling data}
+#| message: false
+data<-read_excel("C:\\Users\\Geetha\\Downloads\\wgm2018-dataset-crosstabs-all-countries.xlsx")
+
+```
+
+```{r subset data}
+#| message: false
+national <- data[c('...1', '...2', '...3', 'National results','...5')]
+colnames(national) <- c("Country", "Question", "Response", "National_Results_Col_Per", "National_Results_Count")
+
+national <- national[!(national$Country %in% c(NA, 'Country')),]
+#drop title row since renamed cols alr
+
+```
+
+```{r split to get question number}
+national$QNumber <- str_split_i(national$Question, " ", 1)
+
+```
+
+```{r name global region vectors}
+
+asia <- c('Afghanistan', 'Bangladesh', 'Cambodia', 'China', 'India', 'Indonesia', 'Japan', 'Laos', 'Malaysia', 'Mongolia', 'Myanmar', 'Nepal', 'Pakistan', 'Philippines', 'Singapore', 'South Korea', 'Sri Lanka', 'Taiwan', 'Thailand', 'Vietnam'
+)
+
+mena <- c('Algeria', 'Egypt', 'Iran', 'Iraq', 'Israel', 'Jordan', 'Kuwait', 'Lebanon','Libya', 'Morocco', 'Palestine', 'Saudi Arabia', 'Tunisia', 'United Arab Emirates', 'Yemen'
+)
+
+americas <- c('Argentina', 'Bolivia', 'Brazil', 'Canada', 'Chile', 'Colombia', 'Costa Rica', 'Dominican Republic', 'Ecuador', 'El Salvador', 'Guatemala', "Haiti", 'Honduras','Mexico', 'Nicaragua', 'Panama', 'Paraguay', 'Peru', 'United States', 'Uruguay', 'Venezuela'
+)
+
+sub_sahara <- c('Benin', 'Botswana', 'Burkina Faso', 'Burundi', 'Cameroon', 'Congo, Rep.','Comoros', 'Chad','Eswatini','Ethiopia', 'Gabon', 'Ghana', 'Guinea', 'Ivory Coast', 'Kenya', 'Liberia', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius','Mozambique', 'Namibia', 'Niger', 'Nigeria', 'Rwanda', 'Senegal','Sierra Leone', 'South Africa', 'Tanzania', 'The Gambia', 'Togo','Uganda', 'Zambia', 'Zimbabwe'
+)
+
+europe <- c('Albania', 'Austria', 'Belgium', 'Bosnia and Herzegovina', 'Bulgaria','Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Finland', 'France','Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Kosovo','Luxembourg', 'Macedonia', 'Malta', 'Netherlands', 'Norway', "Poland", 'Northern Cyprus', 'Montenegro', 'Portugal', 'Romania', 'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Turkey', 'United Kingdom'
+)
+
+former_soviet <- c('Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Russia', 'Tajikistan', 'Ukraine', 'Uzbekistan', 'Turkmenistan'
+)
+
+oceania <- c('Australia', 'New Zealand')
+```
+
+# IL-2 and DM-1
+
+You can see my citations and data-wrangling below.
+
+```{r create nat1}
+national1 <- national |>
+  fill(QNumber, .direction = "down") |>
+  #Source for .direction: https://tidyr.tidyverse.org/reference/fill.html
+  filter(QNumber == "Q25") |>
+  filter(Response == "Strongly agree" | Response == "Somewhat agree") |> group_by(Country) |>
+  summarize(Agree_Percent = sum(as.numeric(National_Results_Col_Per)), .groups = "drop") |> 
+  mutate(Region = case_when(
+    Country %in% asia ~ "Asia",
+    Country %in% mena ~ "Middle East and North Africa",
+    Country %in% americas ~ "Americas",
+    Country %in% sub_sahara ~ "Sub-Saharan Africa",
+    Country %in% europe ~ "Europe",
+    Country %in% former_soviet ~ "Former Soviet Union",
+    Country %in% oceania ~ "Oceania",
+    
+    TRUE ~ "Other" #used to check, there are none that fall in this category
+  ))
+  #summarize function : https://stackoverflow.com/questions/62891736/sum-sub-groups-with-dplyr
+```
+
+```{r nat 1 outlier identification}
+
+outliers <- national1|>
+  group_by(Region)|>
+  mutate(
+    Q1 = quantile(Agree_Percent, 0.25),  Q3 = quantile(Agree_Percent, 0.75),
+    IQR = Q3 - Q1,
+    is_outlier = Agree_Percent < (Q1 - 1.5 * IQR) | Agree_Percent > (Q3 + 1.5 * IQR)
+  ) |>
+  filter(is_outlier)
+```
+
+![](/images/Capture3.JPG)
+
+```{r plot nat1}
+
+#layout-ncol: 2
+#knitr::include_graphics("images/Capture3.jpg")
+
+#https://stackoverflow.com/questions/77144719/how-to-embed-an-image-into-a-quarto-document-in-r
+
+
+ggplot(national1, aes(x = Region,y=Agree_Percent,fill = Region))+
+  geom_boxplot(outlier.shape= NA,alpha = 0.7) +  
+  geom_point(data = outliers, aes(x =Region, y= Agree_Percent), shape =16, size =3, color = "black") +
+  geom_text(
+    data =outliers,
+    aes(label= Country), vjust =0.25, hjust=-0.25,  size = 4, family="serif"
+  )+ scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "The Percentage of People Who Believe Vaccines are Safe by Global Region",
+    x= "Region",y= NULL,
+  ) +theme_minimal(base_family = "serif")+
+  
+  theme(axis.text.x = element_text(angle = 20, hjust = 0.75), axis.text = element_text(size = 10,color = "black"), legend.position = "none"
+        )
+
+
+```
+
+## **Part Two: Broad Visualization Improvement**
+
+### **Second Data Visualization Improvement**
+
+7.  **Select a data visualization in the report that you think could be improved. Be sure to cite both the page number and figure title. Do your best to tell the story of this graph in words. That is, what is this graph telling you? What do you think the authors meant to convey with it?**
+
+# TC- 1: interpreting plots
+
+Chart 5.7: Map of proportions of people reporting vaccinating their children on page 121. This graph is telling us what percentage of the people in a particular country say their children have been vaccinated. It compares between countries, highlighting where this percentage is particularly high or low.
+
+```{r show existing plot}
+#knitr::include_graphics("images/Capture.jpg")
+```
+
+8.  **List the variables that appear to be displayed in this visualization.**
+
+Percentage of people who answered ‘yes’ to their children having received vaccines and Country,
+
+9.  **Now that you’re versed in the grammar of graphics (ggplot), list the aesthetics used and which variables are specified for each.**
+
+The map shows the variable country, the color is filled by the percentage of people who answered 'yes'.
+
+10. **What type of graph would you call this?**
+
+I would call this a chloropleth map!
+
+Source: <https://support.esri.com/en-us/gis-dictionary/choropleth-map#:~:text=From%20the%20Greek%20terms%20choro,combining%20different%20sets%20of%20symbols.>
+
+11. **List all of the problems or things you would improve about this graph.**
+
+-   I would make the color scaling more distinct and more apparent as it is difficult to visibly see the percentage or people who said their children had been vaccinated.
+
+-   I might add in global region to see if that shows any distinctions.
+
+-   I would make the countries that were not surveyed a more distinct color from the background color as it is hard to notice island nations and the like.
+
+12. **Improve the visualization above by either re-creating it with the issues you identified fixed OR by creating a new visualization that you believe tells the same story better.**
+
+# IL - 2
+
+I use source citations below!
+
+```{r create nat2}
+national2 <- national |>
+  fill(QNumber, .direction = "down") |>
+  #Source for .direction: https://tidyr.tidyverse.org/reference/fill.html
+  filter(QNumber == "Q28")|> filter(Response == "Yes") |> mutate(Region = case_when(
+    
+    Country %in% asia ~ "Asia",
+    Country %in% mena ~ "Middle East and North Africa",
+    Country %in% americas ~ "Americas",
+     Country %in% sub_sahara ~ "Sub-Saharan Africa",
+    Country %in% europe ~ "Europe",
+    
+    Country %in% former_soviet ~ "Former Soviet Union",
+    
+    Country %in% oceania ~ "Oceania",
+    
+    TRUE ~ "Other" #used to check, there are none that fall in this category
+  ))
+```
+
+```{r connect nat2 to world dataset}
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+world$Country <- tolower(world$name_long)
+national2$Country <- tolower(national2$Country)
+
+world_data <- left_join(world, national2, by = c("Country" = "Country"))
+world_data$National_Results_Col_Per <- as.numeric(world_data$National_Results_Col_Per)
+
+#world_data$National_Results_Col_Per[is.na(world_data$National_Results_Col_Per )] <- "Countries not surveyed"
+```
+
+# PV-1
+
+I used a custom color palette here!
+
+```{r plot nat2}
+#colorpalette
+pal <- colorBin(
+  palette =c("#ffffd4", "#fec44f", "#fe9929", "#fc4e2a", "#b10026"),
+  #https://loading.io/color/feature/YlOrRd-8
+  domain = world_data$National_Results_Col_Per,
+  bins =c(0, 0.70, 0.80, 0.90, 0.95, 1.00), na.color ="#d3d3d3"  
+)
+
+#plot
+leaflet(world_data) |> addTiles() |>
+  addPolygons(
+    fillColor = ~pal(National_Results_Col_Per), weight = 1,
+    color = "white", fillOpacity = 0.8,
+    label = ~paste0(Country, ": ", National_Results_Col_Per, "%"),
+    highlight = highlightOptions(
+      weight = 2, color = "#666",
+      fillOpacity = 0.9, bringToFront = TRUE
+    )
+    #Source: https://r-charts.com/spatial/interactive-maps-leaflet/
+  ) |>
+  
+  addLegend(
+    pal = pal, values = ~National_Results_Col_Per,
+    title = "Percentage of people who say  <br> their child has been vaccinated", position = "bottomright"
+    #Source line break: https://www.reddit.com/r/Rlanguage/comments/6bsji1/add_line_break_to_leaflet_pop_up/
+  ) 
+
+
+```
+
+## **Third Data Visualization Improvement**
+
+13. **Select a data visualization in the report that you think could be improved. Be sure to cite both the page number and figure title. Do your best to tell the story of this graph in words. That is, what is this graph telling you? What do you think the authors meant to convey with it?**
+
+    ![](/images/Capture2.JPG)
+
+<!-- -->
+
+14. **List the variables that appear to be displayed in this visualization.**
+
+The percentages for all of the following columns: Men, Women, `15-29`, `30-49`,`50+`, `Elementary education or less`, `Secondary education`, `Post-secondary education`, `Rural/small town`, `Big city/suburb,  as well as separate created onee like Parents and Non-Parents`
+
+14. **Now that you’re versed in the grammar of graphics (ggplot), list the aesthetics used and which variables are specified for each.**
+
+The x axis is the demographic group while the y-axis is the percentage of the group that believes vaccines are unsafe!
+
+14. **What type of graph would you call this?**
+
+A bar plot!
+
+14. **List all of the problems or things you would improve about this graph.**
+
+I would facet this better and change the background color as the yellow almost blends in with the lighter blue background.
+
+14. **Improve the visualization above by either re-creating it with the issues you identified fixed OR by creating a new visualization that you believe tells the same story better.**
+
+```{r nat 3}
+
+national3 <- data[c('...1', '...2','...3','National results','...5',
+                    'Gender','...7', '...8', '...9',
+                     'Age Cohort','...11', '...12',
+                    '...13', '...14', '...15', 'General Educational Background', 
+                  '...17','...18', '...19', 
+                    '...20','...21','Area Type', 
+                  '...23', '...24','...25')]
+
+colnames(national3)<- c("Country", "Question", "Response",
+                         "National_Results_Col_Per", "National_Results_Count",
+                         "Men", "Man_num", "Women", "Woman_num",
+                         "15-29", "15_29_Num","30-49",
+                 "30_49_Num", "50+", "Above_50_Num",
+                         "Elementary education or less", "elementary_num",
+                         "Secondary education","secondary_num", 
+                         "Post-secondary education","college_num", 
+                         "Rural/small town","rural_num", 
+                         "Big city/suburb","suburb_num")
+
+national3 <- national3[!(national3$Country %in% c(NA, 'Country')),]
+national3$QNumber <- str_split_i(national3$Question, " ", 1)
+
+national3 <- national3 |> 
+  filter(Country == "France")|> fill(QNumber, .direction = "down") |>
+  filter(QNumber == "Q25")|> filter(Response %in% c("Strongly disagree","Somewhat disagree")) |>
+  mutate(across(c(National_Results_Col_Per, Men, Women, `15-29`, `30-49`,`50+`, 
+                  `Elementary education or less`, `Secondary education`, `Post-secondary education`,
+                  `Rural/small town`, `Big city/suburb`),as.numeric)) |>
+  
+  summarize(across(c(National_Results_Col_Per,Men, Women, `15-29`, `30-49`,`50+`, 
+                  `Elementary education or less`, `Secondary education`, `Post-secondary education`,
+                  `Rural/small town`, `Big city/suburb`), sum, na.rm = TRUE), .groups = "drop")|>
+  mutate(Country = "France")
+
+```
+
+```{r}
+
+data2<-read_excel("C:\\Users\\Geetha\\Downloads\\wgm2018-dataset-crosstabs-all-countries.xlsx", sheet = "Full dataset")
+
+
+```
+
+```{r code for parents}
+# France's WP5 is 13
+france<- data2|> filter( WP5 == 13) |> select(WP5, Q25, Q27)|>group_by(Q27, Q25) |>
+  summarise(count = n(), .groups = "drop_last") |>
+  mutate(percentage = round(count / sum(count), 6)) |> ungroup() |>
+  filter(Q25 %in% c(4, 5)) |> group_by(Q27) |>
+  summarise( total_count = sum(count),
+             total_percentage = sum(percentage)) |> pivot_wider(
+    names_from = Q27,
+    values_from = c(total_count, total_percentage),
+    names_glue = "Q27_{Q27}_{.value}") |> select(Q27_1_total_percentage, Q27_2_total_percentage) |>mutate(Country = "France")
+
+
+colnames(france) <- c("Parents", "Non-Parents", "Country")
+
+```
+
+```{r joining the two data sets}
+france_all<- merge(national3, france, by = "Country")
+
+```
+
+# IL-1
+
+I use dplyr syntax!
+
+```{r pivoting the joined france set to longer}
+france_long <- france_all |>
+  pivot_longer(
+    cols = -c(Country, National_Results_Col_Per),
+    names_to = "Category",
+    values_to = "Percentage"
+  )|>mutate(Group = case_when(
+  Category %in% c("Men", "Women") ~ "Gender",
+  Category %in% c("15-29", "30-49", "50+") ~ "Age",
+  Category %in% c("Elementary education or less", "Secondary education", "Post-secondary education") ~ "Education",
+  Category %in% c("Rural/small town", "Big city/suburb") ~ "Region",
+  Category %in% c("Parents", "Non-Parents") ~ "Parenthood",
+  TRUE ~ "Other"
+  ))
+france_long
+```
+
+# IL-1 and PV-1
+
+I used ggrepel! You can also see how I edit the title, the axes, the axes,a title and remove the legend for this plotl.
+
+```{r plot 3}
+
+
+
+ggplot(france_long, aes(x = reorder(Category, Percentage), y = Percentage, fill = Category)) + geom_bar(stat = "identity", width = 0.7) + coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  facet_wrap(~ Group, scales = "free_y",ncol = 1) +
+  labs(title = "Proportion of people in France who believe vaccines \nare unsafe by Demographic Group",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text_repel(aes(label = round(Percentage, 2)), size = 3, box.padding = 0.3) 
+  
+
+```

@@ -1,0 +1,862 @@
+---
+title: "Final Reflection"
+format: html
+author: "Harshini Karthikeyan"
+date: '06-08-2025'
+format:
+  html:
+    backgroundcolor: whitesmoke
+    monobackgroundcolor: lightsteelblue
+    fontcolor: black
+    number_sections: yes
+#mainfont: default
+editor: visual
+toc: true
+toc_float: true
+embed-resources: true
+image: dashboard_preview.JPG
+---
+
+```{r}
+#| include: false
+#| label: packages-portfolio-objectives
+
+library(tidyverse)
+
+portfolio_levels <- tibble(
+  Objective = character(), 
+  Level = numeric() 
+  )
+
+num_to_cat_levels <- function(x){
+  case_when(x == 1 ~ "Novice", 
+            x == 2 ~ "Proficient",
+            x == 3 ~ "Virtuoso")
+}
+```
+
+# Independent Learning (IL):
+
+*These objectives show your ability to seek out new information and
+adapt to new tools to solve data analysis problems.*
+
+## \[IL-1\] Adding new skills:
+
+-   I can find and adopt new packages to accomplish tasks.
+-   I can adapt to different syntax styles (tidy, base, formula style,
+    data.table).
+
+```{r}
+#| include: false
+#| label: IL-1
+
+## Fill in the line below with your self-assigned level for this objective.
+## Remember, you have the following levels to choose from:
+
+# 1 = Novice
+# 2 = Proficient
+# 3 = Virtuoso
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "IL-1",
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in adopting new packages for our labs. For example, I utilized ggrepel to annotate a plot in lab 2 for visualizations, and I used a package named metBrewer, to link in interesting color palettes, in lab 9 for generative art, 
+
+I feel I am also a virtuoso in adapting to different syntax styles as you can see me use tidyverse, base R and formula style, particularly in labs 2 and lab 9.
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-01-Visualizations/visualizations.html>
+
+<https://hersheyk.github.io/portfolio/posts/2025-06-02-generative-art/>
+
+
+```{r}
+
+knitr::include_graphics("C:/Users/Geetha/OneDrive/Documents/STAT541/portfolio/images/ggrepel_example.JPG")
+```
+
+```{r}
+#| eval: FALSE
+
+ggplot(france_long, aes(x = reorder(Category, Percentage), y = Percentage, fill = Category)) + geom_bar(stat = "identity", width = 0.7) + coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  facet_wrap(~ Group, scales = "free_y",ncol = 1) +
+  labs(title = "Proportion of people in France who believe vaccines \nare unsafe by Demographic Group",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text_repel(aes(label = round(Percentage, 2)), size = 3, box.padding = 0.3) 
+```
+
+## \[IL-2\] Online resources:
+
+-   I can use online resources (e.g., Google, ChatGPT, StackOverflow,
+    YouTube) to solve problems, debug, or find new tools.
+-   I can use tutorials, etc. to enhance my understanding of new
+    concepts.
+-   I can find source code for similar projects to use as starting
+    points for my own.
+
+```{r}
+#| include: false
+#| label: IL-2
+
+## Fill in the line below with your self-assigned level for this objective.
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "IL-2", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in using online resources to solve problems, explore new tools, and deepen my understanding of concepts. In Lab 2, I cited Stack Exchange as a starting point for some of my code, and frequently google functions, and look for their uses in R-documentation
+
+<https://hersheyk.github.io/portfolio/posts/2025-04-14-Visualizations/visualizations.html>
+
+## IL Summary
+
+```{r}
+#| echo: false
+#| label: IL-summary-graph
+
+portfolio_levels %>%
+  filter(
+    str_extract(Objective, "[A-Z]{2,4}") == "IL"
+    ) %>% 
+  mutate(
+    Level = num_to_cat_levels(Level)
+  ) %>%
+  ggplot(mapping = aes(x = Level,
+                       y = after_stat(count / sum(count))
+                       )
+         ) +
+  geom_bar() +
+  labs(x = "Level of Achievement",
+       y = "", 
+       title = "Achievement of CDAI Objectives") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+# Reproducible Workflow (RW):
+
+*These objectives show your ability to produce artifacts and
+deliverables that are organized, documented, version tracked, and
+responsibly designed.*
+
+## \[RW-1\] File, code, and data management:
+
+-   I can use Git and GitHub to track my progress (creating repos,
+    cloning, forking, pull requesting).
+-   I always use R Projects and the {here} package to organize my
+    scripts, notebooks, data, and applications.
+-   I always use pull requests when collaborating with others.
+
+```{r}
+#| include: false
+#| label: RW-1
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "RW-1",
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in file, code, and data management, especially through the consistent use of R Projects and GitHub. I consistently use RProjects to organize my work and have learned a great deal about connecting GitHub to RStudio. I am pretty good about committing my work to the repository after making major changes to my code, which helps keep my progress version tracked and recoverable. When working on Labs 7 and 8, I regularly used pull requests to coordinate with Alisa, ensuring that we never lost any of our work. This was super helpful, as we worked on a project for 415 together, and collaborated using Github. Working together also helped me to use the here package in my code as we can see in Lab 7. 
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-19-JSON-and-APIS/>
+
+
+```{r}
+
+
+knitr::include_graphics("C:/Users/Geetha/OneDrive/Documents/STAT541/portfolio/images/commit_history.JPG")
+
+```
+
+
+
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## \[RW-2\] Notebooks:
+
+-   I can use Quarto to produce a reproducible notebook and polished
+    rendered documents
+-   I can use appropriate chunk options (echo, error, cache, etc.) to
+    render my Quarto document quickly and cleanly.
+
+```{r}
+#| include: false
+#| label: RW-2
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "RW-2",
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am proficient in using Quarto to create reproducible and polished notebooks. I have learned more about the various html options provided in quarto
+including YAML background colors, table of contents, code-folding and
+embedding resources. I also use code chunk options such as #\| message:
+false, to not output messages after specific code chunks(particularly
+useful in chunks where I call libraries or pull in data), or eval:false, to print the code but not evaluate it. I also label my code chunks, as seen in lab 3.
+
+<https://hersheyk.github.io/portfolio/posts/2025-04-24-dashboard-static/>
+
+
+## \[RW-3\] Code style
+
+-   My code is clear, readable, well-organized, and well-commented.
+
+```{r}
+#| include: false
+#| label: RW-3
+
+my_level <- 2
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "RW-3",
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification
+
+I feel I am proficient in writing clear, readable, and well-organized code. I would say that I am pretty thorough about labeling code
+chunks(particularly because it makes it easy when I get an error as R
+informs me of the code chunk by name). This is especially clear in labs 7 and 8
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-19-JSON-and-APIS/>
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-27-webscraping/>
+
+
+```{r}
+
+knitr::include_graphics("C:/Users/Geetha/OneDrive/Documents/STAT541/portfolio/images/labeledchunks.JPG")
+```
+
+## RW Summary
+
+```{r}
+#| echo: false
+#| label: RW-summary-graph
+
+portfolio_levels %>%
+  filter(
+    str_extract(Objective, "[A-Z]{2,4}") == "RW"
+    ) %>% 
+  mutate(
+    Level = num_to_cat_levels(Level)
+  ) %>%
+  ggplot(mapping = aes(x = Level,
+                       y = after_stat(count / sum(count))
+                       )
+         ) +
+  geom_bar() +
+  labs(x = "Level of Achievement",
+       y = "", 
+       title = "Achievement of RW Objectives") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+# Technical Communication (TC):
+
+*These objectives show your ability to communicate the processes you
+have implemented in your code, as well as the data conclusions and
+results.*
+
+## \[TC-1\] Project summaries:
+
+-   I can create clear and succinct summaries of a project.
+-   I accurately interpret statistical or modeling results.
+-   I consider the appropriate scope and impact of my project results.
+
+```{r}
+#| include: false
+#| label: TC-1
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "TC-1", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in creating clear and succinct project summaries. In the write-up portion of Lab 8, webscraping, we effectively evaluated our code, and the outcomes. I am also proud of my write up in Lab 9, generative art. Further, in lab 2 you can see me interpret existing plots, before recreating them to better summarize the data.  
+
+<https://hersheyk.github.io/portfolio/posts/2025-04-14-Visualizations/visualizations.html>
+<https://hersheyk.github.io/portfolio/posts/2025-05-27-webscraping/>
+<https://hersheyk.github.io/portfolio/posts/2025-06-02-generative-art/>
+
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## \[TC-2\] Documentation:
+
+-   I can create a user-friendly dashboard.
+-   I provide ample documentation for my custom functions.
+
+```{r}
+#| include: false
+#| label: TC-2
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "TC-2", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in documentation. I created a user-friendly dashboard, which is published on shinyapps.io. Additionally, I provided thorough documentation for my custom functions, as seen in in Lab 6, Writing Efficient Functions, and Lab 8, Webscraping. In both labs, I included clear comments, explaining the logic behind each step.
+
+<https://ezd0m8-harshini-k.shinyapps.io/lab4/#belief-in-vaccine-safety-statistics>
+
+## TC Summary
+
+```{r}
+#| echo: false
+#| label: TC-summary-graph
+
+portfolio_levels %>%
+  filter(
+    str_extract(Objective, "[A-Z]{2,4}") == "TC"
+    ) %>% 
+  mutate(
+    Level = num_to_cat_levels(Level)
+  ) %>%
+  ggplot(mapping = aes(x = Level,
+                       y = after_stat(count / sum(count))
+                       )
+         ) +
+  geom_bar() +
+  labs(x = "Level of Achievement",
+       y = "", 
+       title = "Achievement of TC Objectives") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+# Data Manipulation (DM):
+
+*These objectives relate to the collection, cleaning, processing, and
+preparing of datasets for analysis.*
+
+## \[DM-1\] Data Preparation
+
+-   I can read in datasets to R, including untidy ones.
+-   I can clean datasets to deal with missing data, typos, poor
+    formatting, etc.
+
+```{r}
+#| include: false
+#| label: DM-1
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "DM-1", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in reading in a variety of datasets to R, even those that are untidy or poorly formatted. I can read in data that is in a csv, pull data from an API, or other links and I can pivot it and restructure the data as
+necessary to deal with formatting, as can be seen in Lab 2, advanced visualizations. I can deal with missing data and typos as seen in Lab 7, json and APIs. I can read in different sheets of the same excel file.
+
+<https://hersheyk.github.io/portfolio/posts/2025-04-14-Visualizations/visualizations.html>
+<https://hersheyk.github.io/portfolio/posts/2025-05-19-JSON-and-APIS/>
+
+
+## \[DM-2\] Data Wrangling
+
+-   I can cleverly use pivoting, separating, grouping, and joining to
+    wrangle data.
+-   I can use mapping (`purrr`) to perform repeated tasks.
+
+```{r}
+#| include: false
+#| label: DM-2
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "DM-2",
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in data wrangling, using a variety of techniques to manipulate data effectively. For example, in Lab 7, API work, we used purrr to map functions and automate repetitive tasks. As seen in that same lab, I have also  extensively pivoted and joined data to create visualizations that answer specific questions or replicate specific outcomes.
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-19-JSON-and-APIS/>
+
+## \[DM-3\] Data Formats
+
+-   I can use API urls to access JSON data and convert it into a data
+    frame
+-   I can scrape data from the web and convert it into a data frame
+
+```{r}
+## Fill in the line below with your self-assigned level for this objective.
+my_level <- 2
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(tibble(Objective = "DM-3", 
+                   Level = my_level))
+```
+
+### Level: `r my_level`
+
+### Justification
+I feel I am proficient in working with various data formats, particularly accessing and converting data from web sources. In Lab 7, we successfully used API URLs to retrieve JSON data and convert it into tidy data frames for analysis. In Lab 8, we successfully web-scraped the cheese data.
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-19-JSON-and-APIS/>
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-27-webscraping/>
+
+
+## DM Summary
+
+```{r}
+#| echo: false
+#| label: DM-summary-graph
+
+portfolio_levels %>%
+  filter(
+    str_extract(Objective, "[A-Z]{2,4}") == "DM"
+    ) %>% 
+  mutate(
+    Level = num_to_cat_levels(Level)
+  ) %>%
+  ggplot(mapping = aes(x = Level,
+                       y = after_stat(count / sum(count))
+                       )
+         ) +
+  geom_bar() +
+  labs(x = "Level of Achievement",
+       y = "", 
+       title = "Achievement of DM Objectives") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+# Professional Visualization (PV):
+
+## \[PV-1\] Clear & Accessible Visualizations
+
+-   I can make my plots more clear by removing the legend and adding
+    annotations.
+-   I can edit the titles, subtitles, captions, axis labels, etc. to
+    create a clearly labelled plot.
+-   I can choose colors ("scales") and themes to make a visually
+    pleasing and accessible plot.
+
+```{r}
+#| include: false
+#| label: PV-1
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "PV-1", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a virtuoso in creating clear and accessible visualizations. In Lab 2, I edited titles, subtitles, captions, and axis labels to ensure my plots were clearly labeled and easy to interpret. I  remove legends when they add clutter and instead use annotations(via the package ggrepel).  Further, I created custom color palettes using hex codes that I consistently applied across Labs 2, 3, and 4 to maintain a cohesive look in my Quarto dashboard. In lab 9, Generative Art, you can see me select palettes using the package MetBrewer.
+
+<https://hersheyk.github.io/portfolio/posts/2025-04-14-Visualizations/visualizations.html>
+<https://hersheyk.github.io/portfolio/posts/2025-04-24-dashboard-static/>
+<https://hersheyk.github.io/portfolio/posts/2025-06-02-generative-art/>
+
+
+## \[PV-2\] Dynamic Visualizations
+
+-   I can use a package like {gganimate} to create self-contained gifs.
+-   I can use a package like {plotly}, {ggplotly}, {leaflet}, {ggirafe},
+    etc. to make interactive html widgets.
+
+```{r}
+#| include: false
+#| label: PV-2
+
+my_level <- 1
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "PV-2", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a novice in creating dynamic visualizations. While I have not yet used gganimate to create a self-contained GIF, I have successfully used leaflet to build interactive HTML widgets, as seen in Lab 4.
+
+<https://hersheyk.github.io/portfolio/posts/2025-04-28-dashboard-interactive/>
+
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## \[PV-3\] Interactive Visualizations
+
+-   I can use Shiny or webR to create visualizations that react to a
+    user's input.
+
+```{r}
+#| include: false
+#| label: PV-3
+
+my_level <- 2
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "PV-3", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am proficient in creating interactive visualizations using Shiny. In my interactive dashboard(lab 4), I implemented features, including sliders to filter by minimum vaccination percentage and checkboxes to allow users to select specific regions. 
+
+<https://hersheyk.github.io/portfolio/posts/2025-04-28-dashboard-interactive/>
+
+## PV Summary
+
+```{r}
+#| echo: false
+#| label: PV-summary-graph
+
+portfolio_levels %>%
+  filter(
+    str_extract(Objective, "[A-Z]{2,4}") == "PV"
+    ) %>% 
+  mutate(
+    Level = num_to_cat_levels(Level)
+  ) %>%
+  ggplot(mapping = aes(x = Level,
+                       y = after_stat(count / sum(count))
+                       )
+         ) +
+  geom_bar() +
+  labs(x = "Level of Achievement",
+       y = "", 
+       title = "Achievement of PV Objectives") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+# Code Design, Algorithms, Iteration (CDAI):
+
+*These objectives ask you to design code-based approaches to statistical
+computing problems, usually involving iteration to a stopping
+condition.*
+
+## \[CDAI-1\] R Programming Language
+
+-   I understand non-standard evaluation (aka "tidy eval" or "unquoted
+    objects"), and I can use tunneling in my functions.
+-   I understand functional programming, and I can use functions as
+    objects in my code design.
+
+```{r}
+#| include: false
+#| label: CDAI-1
+
+my_level <- 1
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "CDAI-1", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a novice in using the R programming language, particularly with non-standard evaluation. In Lab 6, Writing Efficient Functions, I designed flexible functions using ... to allow for dynamic arguments.  I have absolutely used functions as objects in my code design as seen in lab 6.
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-12-writing-efficient-functions/>
+
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## \[CDAI-2\] Object Handling
+
+-   I have built in checks for possible input problems
+-   I can make reasonable choices in my code design about when to save
+    intermediate objects.
+-   I can convert objects between types and structures as needed.
+
+```{r}
+#| include: false
+#| label: CDAI-2
+
+my_level <- 3
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "CDAI-2", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I believe I am a virtuoso in object handling. I’ve added input validation to my functions, made often saved intermediate objects in both data cleaning and modeling(after making considerable changes), and converted between object types (like JSON to data frames or raw to characters) as needed across multiple labs. These are particularly seen in lab 7 and lab 6! Additionally, in lab 6, we created intermediate objects for labels and pop-ups, so that the leaflet plot code was very easy to read. 
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-12-writing-efficient-functions/>
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-19-JSON-and-APIS>
+
+## \[CDAI-3\] Speed and Efficiency
+
+-   I can recognize moments of possible slowdown in my code, and use
+    built-in functions or parallelizing to speed them up.
+-   I always use and design vectorized functions whenever possible.
+
+```{r}
+#| include: false
+#| label: CDAI-3
+
+my_level <- 1
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "CDAI-3", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am a novice in recognizing potential slowdowns in my code, but feel I am proficient at improving efficiency by designing vectorized functions. This is especially evident in Lab 6, where I tested the efficiency of my functions and in  Lab 8, where we optimized functions for webscrapping, and tested the efficiency of our code.
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-12-writing-efficient-functions/>
+
+<https://hersheyk.github.io/portfolio/posts/2025-06-02-generative-art/>
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## \[CDAI-4\] Supporting Functions
+
+-   I write helper / shortcut functions to streamline repeated tasks and
+    make my code easier to read.
+-   I use intermediate functions to streamline repeated or looping
+    processes.
+
+```{r}
+#| include: false
+#| label: CDAI-4
+
+my_level <- 2
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "CDAI-4", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I feel I am proficient in writing helper and shortcut functions. You can see this in lab 9, where I designed helper functions like generate_polygon() for creation of each individual polygon. This also helped to streamline the plotting process.
+
+
+<https://hersheyk.github.io/portfolio/posts/2025-06-02-generative-art/>
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## \[CDAI-5\] Algorithmic Process
+
+-   I can invent and implement my own iterative algorithm.
+-   My loops are clean and efficient.
+-   I have built in checks for possible problems or extreme cases in the
+    algorithm.
+
+```{r}
+#| include: false
+#| label: CDAI-5
+
+my_level <- 2
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "CDAI-5", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I am proficient in designing and implementing iterative algorithms, as demonstrated in Lab 8’s web scraping project. I wrote clean and efficient loops using purrr::map() to iterate over multiple pages of the cheese.com database, with built-in checks such as a 1-second delay between requests to respect the server and avoid overload. 
+
+<https://hersheyk.github.io/portfolio/posts/2025-05-27-webscraping/>
+
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## \[CDAI-6\] Generative Art
+
+-   I can apply a variety of generative art functions to make a visually
+    pleasing piece.
+-   I can explain why particular changes to the code result in
+    particular differences in the visualization.
+
+```{r}
+#| include: false
+#| label: CDAI-6
+
+my_level <- 2
+
+portfolio_levels <- portfolio_levels %>%
+  bind_rows(
+    tibble(Objective = "CDAI-6", 
+           Level = my_level)
+    )
+```
+
+### Level: `r my_level`
+
+### Justification:
+
+I am proficient in creating generative art, as seen in lab 9. I liked how my pieces turned out, and while I can explain how most of the changes to the code, would impact the outcome, I'm not sure I could explain everything. 
+
+<https://hersheyk.github.io/portfolio/posts/2025-06-02-generative-art/>
+<!-- Insert references to the work shown in the blog(s) on your personal website -->
+
+## CDAI Summary
+
+```{r}
+#| echo: false
+#| label: CDAI-summary-graph
+
+portfolio_levels %>%
+  filter(
+    str_extract(Objective, "[A-Z]{2,4}") == "CDAI"
+    ) %>% 
+  mutate(
+    Level = num_to_cat_levels(Level)
+  ) %>%
+  ggplot(mapping = aes(x = Level,
+                       y = after_stat(count / sum(count))
+                       )
+         ) +
+  geom_bar() +
+  labs(x = "Level of Achievement",
+       y = "", 
+       title = "Achievement of CDAI Objectives") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+# Overall Summary
+
+```{r}
+#| echo: false
+#| label: overall-summary-graph
+
+portfolio_levels %>%
+  mutate(
+    Category = str_extract(Objective, "[A-Z]{2,4}"),
+    Level = case_when(Level == 1 ~ "Novice", 
+                      Level == 2 ~ "Proficient",
+                      Level == 3 ~ "Virtuoso")
+  ) %>%
+  ggplot(mapping = aes(x = Level,
+                       y = after_stat(count / sum(count))
+                       )
+         ) +
+  geom_bar() +
+  labs(x = "Level of Achievement",
+       y = "") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+## Grade
+
+Based on the summary plot above, I believe I have earned an A- in STAT
+541.
+
+### Justification
+
+I believe an A- is an accurate reflection of my portfolio work. I have
+solid progress across multiple standards, especially since the Midterm Portfolio. Previously,
+I successfully adopted new tools like ggrepel, used online resources
+such as StackOverflow and documentation to guide my work, and
+consistently employed reproducible practices in Quarto and GitHub.
+Now, I particularly feel I have improved in areas such as Code Design and Iteration. I am able to write my own functions and assess their efficiency, I am excellent at creating supporting functions and intermediate objects. I can now use collaborative github code practices successfully. 
+
+Despite all of this improvement, there are some areas where my knowledge feels weak such as when to use enquoted objects, or understanding how to transform the data, and create changes in generative art. I am also not confident in creating dynamic visualizations and greatly struggled with the interactive dashboard.
+
+Overall, while I’ve met many of the course’s core expectations, I feel there are some areas of continued learned, which is why an A-, feels like a fair evaluation.

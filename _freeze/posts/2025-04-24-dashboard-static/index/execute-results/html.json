@@ -1,0 +1,15 @@
+{
+  "hash": "b5714cd31ac9c413b2c0def1f4f1efd9",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Static Quarto Dashboards\"\nauthor: \"Harshini Karthikeyan\"\ndate: '04-24-2025'\nformat:\n  html:\n    backgroundcolor: whitesmoke\n    monobackgroundcolor: lightsteelblue\n    fontcolor: black\n    number_sections: yes\n#mainfont: default\neditor: visual\ntoc: true\ntoc_float: true\nembed-resources: true\nimage: dashboard_preview.JPG\n---\n\n\n\n# Overall thoughts:\n\nI was very proud to get this lab up and working. I definitely learned a lot in the process. I believe a lot of what I learned in making static quarto dashboards was encapsulated in lab 4 with the interactive dashboards and lab 2, where I set up a lot of the initial data. As a result, I do not mention this lab too much in the final reflection. I believe the main standard this lab showcases is RW: 3 as I label all my code chunks and in value boxes, I use code-chunk options.\n\n## RW-3\n\n\n\n::: {.cell content='valuebox' title='Country with Lowest Belief in Vaccine Safety' color='danger'}\n\n```{.r .cell-code}\nlist(\n  value = toupper(lowest_country)\n)\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nknitr::include_graphics(\"C:/Users/Geetha/OneDrive/Documents/STAT541/portfolio/images/labeledchunks.JPG\")\n```\n\n::: {.cell-output-display}\n![](../../images/labeledchunks.JPG)\n:::\n:::\n\n\n\nYou can visit my published static dashboard below:\n\n<https://hersheythegr8.quarto.pub/lab-3/#belief-in-vaccine-safety-statistics>\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

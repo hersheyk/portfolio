@@ -1,0 +1,110 @@
+---
+title: "Generative Art"
+author: "Harshini Karthikeyan"
+date: '06-02-2025'
+format:
+  html:
+    backgroundcolor: whitesmoke
+    monobackgroundcolor: lightsteelblue
+    fontcolor: black
+    number_sections: yes
+#mainfont: default
+editor: visual
+toc: true
+toc_float: true
+embed-resources: true
+image: dashboard_preview.JPG
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggforce)
+library(ambient)
+library(MetBrewer)
+library(metR)      
+library(scales)  
+library(colorspace)
+```
+
+```{r}
+
+iris_art <- function(data = iris) {
+  
+  dat <- data %>%
+    #transform iris data into something that is plottable polarly
+    mutate(
+      x0 = (Sepal.Length - min(Sepal.Length)) / (max(Sepal.Length) - min(Sepal.Length)),
+      y0 = (Sepal.Width - min(Sepal.Width)) / (max(Sepal.Width) - min(Sepal.Width)),
+      x1 = x0 + (Petal.Length - min(Petal.Length)) / (max(Petal.Length) - min(Petal.Length)) * 0.3,
+      y1 = y0 + (Petal.Width - min(Petal.Width)) / (max(Petal.Width) - min(Petal.Width)) * 0.3,
+      size = Sepal.Length / max(Sepal.Length)
+    )
+  # green palette
+  paquin_pal <- met.brewer("Veronese")[1:3]  
+  
+  ggplot(dat, aes(x = x0, y = y0, xend = x1, yend = y1, colour = Species, size = size)) +
+    geom_segment(lineend = "round", show.legend = FALSE) +
+    coord_polar() +
+    scale_colour_manual(values = paquin_pal) +
+    scale_size(range = c(0.5, 3)) +
+    theme_void()+
+    theme(plot.background = element_rect(fill = "beige", color = NA))
+}
+
+iris_art()
+
+```
+
+Title: Twist of Iris
+
+At first glance, Twist of Iris feels like a a flower frozen mid-spin, caught in the act of opening. But stare a little longer, and the lines start to echo something else, an iris of an eye.
+
+This piece takes the iris dataset, with each segment built from sepal and petal measurements, "twists" into movement and direction. The use of the a green palette lends the composition a natural, organic feel, like petals dancing in sunlight, pollen drifting in the wind, or a person's eye. It plays with both meanings of “iris”(a flower and an eye ).
+
+```{r}
+# generate each individual polygon
+generate_polygon <- function(center_x, center_y, radius, n_points) {
+  angles <- seq(0, 2 * pi, length.out = n_points + 1)[-1]
+  angles <- jitter(angles, amount = 0.2)
+  data.frame(
+    x = center_x + radius * cos(angles),
+    y = center_y + radius * sin(angles)
+  )
+}
+
+palette <- met.brewer("Ingres", n = 9, type = "continuous")
+# blue gold palette
+
+set.seed(42)
+n_polygons <- 300
+polygon_data <- bind_rows(lapply(1:n_polygons, function(i) {
+  center_x <- runif(1, -10, 10)
+  center_y <- runif(1, -10, 10)
+  radius <- runif(1, 0.2, 0.4) # shape size
+  n_points <- sample(3:7, 1)
+  base_color <- sample(palette, 1)
+  
+  polygon <- generate_polygon(center_x, center_y, radius, n_points)
+  polygon$group <- i
+  polygon$fill <- base_color
+  polygon
+}))
+
+ggplot(polygon_data, aes(x = x, y = y, group = group, fill = fill)) +
+  # added an edge line to the shapes
+  geom_shape(alpha = 0.8, radius = unit(0.1, 'cm'), color = "#736545", size = 0.1) +
+  coord_equal() +
+  theme_void() +
+  scale_fill_identity() +
+  theme(plot.background = element_rect(fill = "black", color = NA))
+
+```
+
+Title: Isolated Pebbles
+
+Description:
+
+Isolated Pebbles presents scattered stones, each rendered in earthy tones with a stark black void-like background. The colors of the stones suggests they are grounded and along with the irregularity of shape reminds the viewer of pebbles one might find on a riverside. These anchor each shape firmly against the deep black background, suggesting they rest quietly on unseen soil.
+
+While some pebbles appear clustered, almost friends, a second look reveals that none truly touch. Even shapes that share similar colors and forms(as with traits that people have in common) remain separated by subtle distances, and are not groped together, suggesting an inherent solitude. This conveys how closeness does not always equate to connection, and similarity does not guarantee friendship. This also could suggest that there are many people like you out there you might yet to have find them though!

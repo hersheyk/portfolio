@@ -1,0 +1,276 @@
+---
+title: "Writing Efficient Functions"
+author: "Harshini Karthikeyan"
+date: '05-12-2025'
+format:
+  html:
+    backgroundcolor: whitesmoke
+    monobackgroundcolor: lightsteelblue
+    fontcolor: black
+    number_sections: yes
+#mainfont: default
+editor: visual
+toc: true
+toc_float: true
+embed-resources: true
+image: dashboard_preview.JPG
+---
+
+# Lab 6 - Spicier
+
+```{r set up}
+#| message: false
+library(tidyverse)
+library(dplyr)
+diamonds<- ggplot2::diamonds
+flights<- nycflights13::flights
+```
+
+## **Exercise 1: Helper Functions** 
+
+Write a function that removes outliers in a dataset. The user should be able to supply the dataset, the variables to remove outliers from, and a threshold on the number of SDs away from the mean used to define outliers.
+
+*Hint 1: You will need to calculate a z-score to filter the values!* 
+
+*Hint 2: You might want to consider specifying a default value (e.g., 3) for `sd_thresh`.*
+
+```{r remove outliers}
+
+remove_outliers<- function(data, ... , sd_threshold = 3){
+  
+  variables <- as.character(substitute(list(...)))[-1]
+  
+  keep <- rep(TRUE, nrow(data))
+  # dataframe of values to keep
+  
+  for(each in variables){
+    if (!is.numeric(data[[each]])) {
+      warning(paste("Variable", each
+                 , "is not numeric! Only numeric variables are supported! We cannot drop outliers from this column"))
+      next
+      # returns error for non-numeric variables
+    }
+    
+    mu <- mean(data[[each]])
+    sd <- sd(data[[each]])
+    z_scores <- (data[[each]] - mu) / sd
+    # find the zscore of each instance of each variable
+    
+    keep <- keep & abs(z_scores) < sd_threshold
+    # filters out values where the zscore is greater than the specified threshold
+      }
+  return (data[keep, ])
+
+  
+}
+
+# [[]] vs [] https://stackoverflow.com/questions/1169456/the-difference-between-bracket-and-double-bracket-for-accessing-the-el
+```
+
+This function is not the most efficient as it does use a for loop.
+
+#### Testing Your Function
+
+```{r multiple input for r_o test}
+## Testing how your function handles multiple input variables
+
+remove_outliers(diamonds, 
+                price, 
+                x, 
+                y, 
+                z)
+```
+
+```{r non-numeric input variable for r_o test}
+
+## Testing how your function handles an input that isn't numeric
+remove_outliers(diamonds, 
+                price, 
+                color)
+```
+
+```{r non-default threshold for r_o test}
+
+## Testing how your function handles a non-default sd_thresh
+remove_outliers(diamonds, 
+                price,
+                x, 
+                y, 
+                z, 
+                sd_threshold = 2)
+```
+
+## **Exercise 2: Helper Functions**
+
+Write a function that imputes missing values for numeric variables in a dataset. The user should be able to supply the dataset, the variables to impute values for, and a function to use when imputing. *Hint 1: You will need to use `across()` to apply your function, since the user can input multiple variables.* *Hint 2: The `replace_na()` function is helpful here!*
+
+```{r}
+impute_missing <- function( data, ..., func = sum){
+  # capture variable names
+  variables <- as.character(substitute(list(...)))[-1]
+  
+   #issues a warning for non-numeric variables and retains them in the dataset without imputing
+  numeric_variables <- variables[sapply(variables, function(x) is.numeric(data[[x]]))]
+  
+  non_numeric_vars <- setdiff(variables, numeric_variables)
+  
+  if(length(non_numeric_vars) > 0) {
+    warning(paste("The following variables are non-numeric and will not be imputed:", paste(non_numeric_vars, collapse = ", ")))
+  }
+  
+  data |>
+    mutate(across(
+      .cols = all_of(numeric_variables),
+      .fns = ~ replace_na(.x, func(.x, na.rm = TRUE))
+    ))
+}
+```
+
+This function is more efficient than the last one as it uses `sapply()` and the usage of dplyr makes this function more efficient than the last one.
+
+#### Testing Your Function
+
+```{r multiple input for i_m}
+## Testing how your function handles multiple input variables
+impute_missing(flights, 
+               arr_delay, 
+               dep_delay) 
+
+```
+
+```{r non-numeric input test for i_m}
+## Testing how your function handles an input that isn't numeric
+impute_missing(flights, 
+               arr_delay, 
+               carrier)
+
+
+```
+
+```{r }
+## Testing how your function handles a non-default impute_fun
+impute_missing(flights, 
+               arr_delay, 
+               dep_delay, 
+               func = median)
+```
+
+## Exercise 3: Primary Function
+
+Write a `fit_model()` function that fits a specified linear regression model for a specified dataset. The function should:
+
+-   allow the user to specify if outliers should be removed (`TRUE` or `FALSE`)
+
+-   allow the user to specify if missing observations should be imputed (`TRUE` or `FALSE`)
+
+If either option is `TRUE`, your function should call your `remove_outliers()` or `impute_missing()` functions to modify the data **before** the regression model is fit.
+
+```{r}
+fit_model <- function(data, mod_formula, remove_outliers = FALSE, impute_missing = FALSE, ...) {
+  
+  #run helper functions if indicated
+  if (remove_outliers) {
+    data <- remove_outliers(data, ...)
+  }
+  
+  if (impute_missing) {
+    data <- impute_missing(data, ...)
+  }
+  
+  #fit the linear regression model
+  model <- lm(mod_formula, data = data)
+  
+  # Return the fitted model
+  return(model)
+}
+```
+
+#### Test Your Function
+
+```{r}
+fit_model(
+  diamonds,
+  mod_formula = price ~ carat + cut,
+  remove_outliers = TRUE,
+  impute_missing = TRUE,
+  price, 
+  carat
+)
+```
+
+### **Iteration**
+
+In the `diamonds` dataset, we want to understand the relationship between `price` and size (`carat`). We want to explore variation along two choices:
+
+1.  The variables included in the model. We’ll explore 3 sets of variables:
+
+    -   No further variables (just `price` and `carat`)
+
+    -   Adjusting for `cut`
+
+    -   Adjusting for `cut` and `clarity`
+
+    -   Adjusting for `cut`, `clarity`, and `color`
+
+2.  Whether or not to impute missing values
+
+3.  Whether or not to remove outliers in the `carat` variable (we’ll define outliers as cases whose `carat` is over 3 SDs away from the mean).
+
+## Exercise 4: Parameters
+
+First, we need to define the set of parameters we want to iterate the `fit_model()` function over. The `tidyr` package has a useful function called `crossing()` that is useful for generating argument combinations. For each argument, we specify all possible values for that argument and `crossing()` generates all combinations. *Note that you can create a list of formula objects in R with `c(y ~ x1, y ~ x1 + x2)`.*
+
+```{r}
+df_arg_combos <- crossing(
+    impute = c(TRUE, FALSE),
+    remove_outliers = c(TRUE, FALSE), 
+    mod = c(y ~ x1, 
+            y ~ x1 + x2)
+)
+df_arg_combos
+```
+
+Use `crossing()` to create the data frame of argument combinations for our analyses.
+
+```{r}
+param_sets <- crossing(
+  impute = c(TRUE, FALSE),                           
+  remove_outliers = c(TRUE, FALSE),                   
+  mod = c(                                        
+    price ~ carat,   # No adjustment    
+    
+    price ~ carat + cut,                             
+    price ~ carat + cut + clarity,     
+    
+    # Adjusting for cut, clarity, and color
+    price ~ carat + cut + clarity + color            
+  )
+)
+param_sets
+```
+
+## Exercise 5: Iterating Over Parameters
+
+Use `pmap()` from `purrr` to apply the `fit_model()` function to every combination of arguments from `diamonds.`
+
+```{r}
+param_sets<-param_sets |>
+  mutate(model = pmap(list(impute, remove_outliers, mod), 
+                      function(impute, remove_outliers, mod) {
+                        fit_model(
+                          data = diamonds,
+                          mod_formula = mod,
+                          remove_outliers = remove_outliers,
+                          impute_missing = impute,
+                          price,
+                          carat
+                          # variable to use for outlier removal and imputation
+                          # variables cut, clarity and color are non-numeric
+                        )
+                      }))
+
+```
+
+```{r}
+print(param_sets$model)
+```
